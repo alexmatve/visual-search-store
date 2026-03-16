@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Button } from '@/shared/ui/shadcn/ui/button'
+
 defineProps<{
   msg: string
 }>()
@@ -12,6 +14,11 @@ defineProps<{
       <a href="https://vite.dev/" target="_blank" rel="noopener">Vite</a> +
       <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>. What's next?
     </h3>
+    <template>
+      <div>
+        <Button>Click me</Button>
+      </div>
+    </template>
   </div>
 </template>
 
