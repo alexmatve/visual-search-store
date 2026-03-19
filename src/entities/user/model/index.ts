@@ -5,6 +5,7 @@ export interface User {
   address?: string
   tel?: string
   role: string
+  createdAt: string
 }
 
 export interface LoginDTO {
@@ -23,4 +24,10 @@ export interface RegisterDTO {
 export interface AuthResponse {
   accessToken: string
   user: User
+}
+
+export interface EditProfileDTO {
+  name: string
+  address: string
+  tel: string
 }

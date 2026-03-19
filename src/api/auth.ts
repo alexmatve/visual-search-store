@@ -1,4 +1,10 @@
-import { type AuthResponse, type LoginDTO, type RegisterDTO, type User } from '@/entities/user'
+import {
+  type AuthResponse,
+  type EditProfileDTO,
+  type LoginDTO,
+  type RegisterDTO,
+  type User,
+} from '@/entities/user'
 import { api } from './client'
 
 export const authApi = {
@@ -11,6 +17,10 @@ export const authApi = {
   },
 
   getProfile() {
-    return api.get('auth/me').json<User>()
+    return api.get('auth/user').json<User>()
+  },
+
+  editProfile(data: EditProfileDTO) {
+    return api.put('auth/user', { json: data }).json<User>()
   },
 }

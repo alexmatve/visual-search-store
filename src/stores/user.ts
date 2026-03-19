@@ -1,6 +1,6 @@
 import { authApi } from '@/api/auth'
-import { api } from '@/api/client'
-import type { LoginDTO, RegisterDTO, User } from '@/entities/user'
+import { api, publicApi } from '@/api/client'
+import { type EditProfileDTO, type LoginDTO, type RegisterDTO, type User } from '@/entities/user'
 import { authStorage } from '@/shared/lib'
 import { useStorage } from '@vueuse/core'
 import { HTTPError } from 'ky'
@@ -84,6 +84,17 @@ export const useUserStore = defineStore('user', () => {
     clearAuth()
   }
 
+  const editProfile = async (data: EditProfileDTO) => {
+    isLoading.value = true
+
+    try {
+      const profile = await authApi.editProfile(data)
+      user.value = profile
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     user,
     token,
@@ -95,5 +106,6 @@ export const useUserStore = defineStore('user', () => {
     initAuth,
     logout,
     clearAuth,
+    editProfile,
   }
 })
