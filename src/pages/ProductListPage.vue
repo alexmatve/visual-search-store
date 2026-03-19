@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useAsyncState } from '@vueuse/core'
 import { getProducts, type ProductsListQuery } from '@/entities/products'
 import { CatalogFilters, LIMIT } from '@/widgets/catalog-filters'
 import { ProductList } from '@/widgets/product-list'
+import { useUserStore } from '@/stores/user'
+
+const { user } = useUserStore()
 
 const query = ref<ProductsListQuery>({
   limit: LIMIT,
@@ -40,6 +43,10 @@ function onUpdateQuery(newQuery: ProductsListQuery) {
   currentPage.value = 1
   loader.execute()
 }
+
+onMounted(() => {
+  console.log(user?.id, user?.name, user?.nickname)
+})
 </script>
 
 <template>

@@ -45,8 +45,13 @@ const goBack = () => {
   <div v-if="loader.state.value" class="mx-auto max-w-7xl space-y-6 px-4 py-8">
     <div class="flex items-start justify-between">
       <div class="grid gap-2">
-        <Button variant="outline" size="sm" class="gap-2 w-fit" @click="goBack">
-          <ArrowLeft class="h-4 w-4" />
+        <Button
+          variant="outline"
+          size="sm"
+          class="gap-2 w-fit ml-[-100px] h-10 w-20"
+          @click="goBack"
+        >
+          <ArrowLeft />
         </Button>
         <div class="text-sm text-gray-500">{{ loader.state.value.category.name }}</div>
         <h1 class="text-3xl font-bold">{{ loader.state.value.name }}</h1>
