@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { EditProfileDTO } from '@/entities/user'
+import { addLike, getFavoriteProducts, removeLike } from '@/features/toggle-like'
 import { NO_DATA } from '@/shared/config'
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/shadcn/ui/avatar'
 import { Button } from '@/shared/ui/shadcn/ui/button'
@@ -14,6 +15,7 @@ import { Input } from '@/shared/ui/shadcn/ui/input'
 import { Label } from '@/shared/ui/shadcn/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/shadcn/ui/tabs'
 import { useUserStore } from '@/stores/user'
+import { FavoriteCard } from '@/widgets/profile'
 import { useAsyncState, useDateFormat } from '@vueuse/core'
 import { Calendar, Camera, MapPin, Phone } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
@@ -23,6 +25,14 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const isEditModeOff = ref<boolean>(true)
+
+const loader = useAsyncState(async () => getFavoriteProducts(), null, {
+  onError(error) {
+    console.error('Failed to load products:', error)
+  },
+  immediate: true,
+  shallow: false,
+})
 
 const getInitialFormState = (): EditProfileDTO => ({
   name: user.value?.name ?? '',
@@ -46,6 +56,20 @@ const cancelEditProfile = () => {
   Object.assign(formState, getInitialFormState())
   isEditModeOff.value = true
 }
+
+async function setLikeState(productId: number, isLiked: boolean) {
+  if (isLiked) {
+    await removeLike(productId)
+  } else {
+    await addLike(productId)
+  }
+
+  loader.state.value = loader.state.value!.map((product) =>
+    product.id === productId ? { ...product, favorite: !isLiked } : product,
+  )
+}
+
+const currentTab = ref('personal')
 
 watch(
   user,
@@ -98,14 +122,18 @@ watch(
               </div>
             </div>
           </div>
-          <Button variant="default" :disabled="!isEditModeOff" @click="isEditModeOff = false"
+          <Button
+            v-if="currentTab === 'personal'"
+            variant="default"
+            :disabled="!isEditModeOff"
+            @click="isEditModeOff = false"
             >Edit Profile</Button
           >
         </div>
       </CardContent>
     </Card>
 
-    <Tabs defaultValue="personal" class="space-y-6">
+    <Tabs defaultValue="personal" v-model:modelValue="currentTab" class="space-y-6">
       <TabsList class="grid w-full grid-cols-2">
         <TabsTrigger value="personal">Personal</TabsTrigger>
         <TabsTrigger value="favorites">Favorites</TabsTrigger>
@@ -149,14 +177,35 @@ watch(
               </div>
             </div>
 
-            <Button v-if="!isEditModeOff" variant="default" @click="handleEditProfile"
-              >Confirm</Button
-            >
-            <Button v-if="!isEditModeOff" variant="default" @click="cancelEditProfile"
-              >Cancel</Button
-            >
+            <div class="flex justify-end gap-3">
+              <Button v-if="!isEditModeOff" variant="default" @click="handleEditProfile"
+                >Confirm</Button
+              >
+              <Button v-if="!isEditModeOff" variant="default" @click="cancelEditProfile"
+                >Cancel</Button
+              >
+            </div>
           </CardContent>
         </Card>
+      </TabsContent>
+
+      <TabsContent value="favorites">
+        <div class="bg-background min-h-screen p-4 lg:p-8">
+          <div class="mx-auto max-w-7xl">
+            <div class="bg-card border-cart-border rounded-lg border p-6">
+              <h1 class="mb-6 text-2xl font-semibold">Favorites</h1>
+
+              <div class="space-y-4">
+                <FavoriteCard
+                  v-for="product of loader.state.value"
+                  :key="product.id"
+                  :product="product"
+                  @toggleLike="setLikeState"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </TabsContent>
     </Tabs>
   </div>

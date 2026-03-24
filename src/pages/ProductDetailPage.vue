@@ -22,7 +22,6 @@ const quantity = ref<number>(1)
 const CURRENCY = '$'
 
 const copyProductUrl = async () => {
-  console.log('button clicked')
   try {
     await navigator.clipboard.writeText(window.location.href)
     toast.success('URL скопирован в буфер обмена')

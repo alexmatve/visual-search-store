@@ -1,4 +1,4 @@
-import { publicApi } from '@/api/client'
+import { api, publicApi } from '@/api/client'
 import type { Product } from '../model/typing'
 import { createPaginationSearchParams } from '@/api/pagination'
 

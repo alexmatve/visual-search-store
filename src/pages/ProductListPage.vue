@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { useAsyncState } from '@vueuse/core'
 import { getProducts, type ProductsListQuery } from '@/entities/products'
 import { CatalogFilters, LIMIT } from '@/widgets/catalog-filters'
 import { ProductList } from '@/widgets/product-list'
-import { useUserStore } from '@/stores/user'
-
-const { user } = useUserStore()
+import { addLike, removeLike } from '@/features/toggle-like'
 
 const query = ref<ProductsListQuery>({
   limit: LIMIT,
@@ -24,6 +22,7 @@ const loader = useAsyncState(
       console.error('Failed to load products:', error)
     },
     immediate: false,
+    shallow: false,
   },
 )
 
@@ -44,9 +43,17 @@ function onUpdateQuery(newQuery: ProductsListQuery) {
   loader.execute()
 }
 
-onMounted(() => {
-  console.log(user?.id, user?.name, user?.nickname)
-})
+async function setLikeState(productId: number, isLiked: boolean) {
+  if (isLiked) {
+    await removeLike(productId)
+  } else {
+    await addLike(productId)
+  }
+
+  loader.state.value.products = loader.state.value.products.map((product) =>
+    product.id === productId ? { ...product, favorite: !isLiked } : product,
+  )
+}
 </script>
 
 <template>
@@ -65,6 +72,7 @@ onMounted(() => {
           :current-page="currentPage"
           :items-per-page="LIMIT"
           @update:page="onPaginationChange"
+          @toggle-like="setLikeState"
         />
       </div>
     </div>

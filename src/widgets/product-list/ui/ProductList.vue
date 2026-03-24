@@ -26,7 +26,12 @@ interface ProductListProps {
 const props = defineProps<ProductListProps>()
 const emit = defineEmits<{
   'update:page': [number]
+  toggleLike: [number, boolean]
 }>()
+
+const onLikeClick = (product_id: number, isLiked: boolean) => {
+  emit('toggleLike', product_id, isLiked)
+}
 </script>
 
 <template>
@@ -69,8 +74,6 @@ const emit = defineEmits<{
               <span class="text-base font-bold text-blue-600 sm:text-lg">
                 {{ CURRENCY }}{{ product.price.toFixed(2) }}
               </span>
-
-              <!-- <Badge variant="destructive" class="text-xs"> -{{product.discount}}% </Badge> -->
             </div>
             <p class="text-muted-foreground text-xs">Brand: {{ product.brand }}</p>
             <div class="flex gap-2 pt-2">
@@ -79,8 +82,16 @@ const emit = defineEmits<{
                 <span class="xs:inline hidden">Add to cart</span>
                 <span class="xs:hidden">Add</span>
               </Button>
-              <Button variant="outline" size="sm" class="bg-transparent px-2 sm:px-3">
-                <Heart class="h-4 w-4" />
+              <Button
+                variant="ghost"
+                size="sm"
+                class="bg-transparent px-2 sm:px-3"
+                @click="onLikeClick(product.id, product.favorite)"
+              >
+                <Heart
+                  class="h-4 w-4 stroke-black transition-all duration-300 ease-in-out"
+                  :class="product.favorite ? 'fill-black' : 'fill-transparent'"
+                />
               </Button>
             </div>
           </div>

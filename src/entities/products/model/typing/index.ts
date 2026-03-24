@@ -1,6 +1,5 @@
 import type { Category } from '@/entities/categories'
 
-// нужно создать интерфейса Category с gender
 export interface Product {
   id: number
   name: string
@@ -9,4 +8,5 @@ export interface Product {
   category: Category
   image: string
   brand: string
+  favorite: boolean
 }
