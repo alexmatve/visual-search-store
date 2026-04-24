@@ -5,6 +5,7 @@ import { getProducts, type ProductsListQuery } from '@/entities/products'
 import { CatalogFilters, LIMIT } from '@/widgets/catalog-filters'
 import { ProductList } from '@/widgets/product-list'
 import { addLike, removeLike } from '@/features/toggle-like'
+import { addToCart } from '@/features/handle-cart'
 
 const query = ref<ProductsListQuery>({
   limit: LIMIT,
@@ -54,6 +55,10 @@ async function setLikeState(productId: number, isLiked: boolean) {
     product.id === productId ? { ...product, favorite: !isLiked } : product,
   )
 }
+
+async function handleCartButton(productId: number) {
+  await addToCart(productId, 1)
+}
 </script>
 
 <template>
@@ -73,6 +78,7 @@ async function setLikeState(productId: number, isLiked: boolean) {
           :items-per-page="LIMIT"
           @update:page="onPaginationChange"
           @toggle-like="setLikeState"
+          @add-to-cart="handleCartButton"
         />
       </div>
     </div>

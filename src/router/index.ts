@@ -1,5 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { LoginPage, ProductDetailPage, ProductListPage, ProfilePage, RegisterPage } from '@/pages'
+import {
+  CartPage,
+  LoginPage,
+  ProductDetailPage,
+  ProductListPage,
+  ProfilePage,
+  RegisterPage,
+} from '@/pages'
 import { RouteNames } from '@/shared/router'
 import { useUserStore } from '@/stores/user'
 
@@ -30,6 +37,14 @@ const router = createRouter({
       path: '/profile',
       name: RouteNames.Profile,
       component: ProfilePage,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/cart',
+      name: RouteNames.Cart,
+      component: CartPage,
       meta: {
         requiresAuth: true,
       },

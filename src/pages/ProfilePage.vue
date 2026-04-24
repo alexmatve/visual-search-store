@@ -15,7 +15,7 @@ import { Input } from '@/shared/ui/shadcn/ui/input'
 import { Label } from '@/shared/ui/shadcn/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/shadcn/ui/tabs'
 import { useUserStore } from '@/stores/user'
-import { FavoriteCard } from '@/widgets/profile'
+import { ProductCard } from '@/widgets/profile'
 import { useAsyncState, useDateFormat } from '@vueuse/core'
 import { Calendar, Camera, MapPin, Phone } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
@@ -196,7 +196,7 @@ watch(
               <h1 class="mb-6 text-2xl font-semibold">Favorites</h1>
 
               <div class="space-y-4">
-                <FavoriteCard
+                <ProductCard
                   v-for="product of loader.state.value"
                   :key="product.id"
                   :product="product"

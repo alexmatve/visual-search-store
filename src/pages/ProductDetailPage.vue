@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { getProduct } from '@/entities/products'
+import { formatProductName, getProduct } from '@/entities/products'
 import { useAsyncState } from '@vueuse/core'
 import { useRoute, useRouter } from 'vue-router'
 import { Button } from '@/shared/ui/shadcn/ui/button'
-import { ArrowLeft, Minus, Plus, Share2, ShoppingBagIcon } from 'lucide-vue-next'
+import { ArrowLeft, Check, Minus, Plus, Share2, ShoppingBagIcon } from 'lucide-vue-next'
 import { Separator } from '@/shared/ui/shadcn/ui/separator'
 import { ref } from 'vue'
 import { toast } from 'vue-sonner'
+import { formatCategoryName } from '@/entities/categories'
+import { addToCart } from '@/features/handle-cart'
 
 const route = useRoute()
 const router = useRouter()
@@ -38,6 +40,25 @@ const goBack = () => {
     router.push('/')
   }
 }
+
+const isAdded = ref(false)
+let addedTimer: ReturnType<typeof setTimeout> | null = null
+
+const onCartButtonClick = async () => {
+  if (loader.state.value?.id) {
+    addToCart(loader.state.value.id, quantity.value)
+
+    isAdded.value = true
+
+    if (addedTimer) {
+      clearTimeout(addedTimer)
+    }
+
+    addedTimer = setTimeout(() => {
+      isAdded.value = false
+    }, 1000)
+  }
+}
 </script>
 
 <template>
@@ -52,8 +73,10 @@ const goBack = () => {
         >
           <ArrowLeft />
         </Button>
-        <div class="text-sm text-gray-500">{{ loader.state.value.category.name }}</div>
-        <h1 class="text-3xl font-bold">{{ loader.state.value.name }}</h1>
+        <div class="text-sm text-gray-500">
+          {{ formatCategoryName(loader.state.value.category.name) }}
+        </div>
+        <h1 class="text-3xl font-bold">{{ formatProductName(loader.state.value.name) }}</h1>
         <h3>{{ loader.state.value.brand }}</h3>
       </div>
 
@@ -114,9 +137,15 @@ const goBack = () => {
           </div>
 
           <div class="flex flex-col gap-2 min-[400px]:flex-row">
-            <Button class="h-12 flex-1 text-lg">
-              <ShoppingBagIcon />
-              Add to Cart
+            <Button class="h-12 flex-1 text-lg" @click="onCartButtonClick">
+              <template v-if="isAdded">
+                <Check />
+                Product added
+              </template>
+              <template v-else>
+                <ShoppingBagIcon />
+                Add to Cart
+              </template>
             </Button>
           </div>
         </div>

@@ -1,3 +1,3 @@
-import FavoriteCard from './ui/FavoriteCard.vue'
+import ProductCard from './ui/ProductCard.vue'
 
-export { FavoriteCard }
+export { ProductCard }

@@ -3,5 +3,6 @@ export enum RouteNames {
   Register = 'register',
   ProductList = 'product-list',
   ProductDetail = 'product-detail',
-  Profile = 'prfile',
+  Profile = 'profile',
+  Cart = 'cart',
 }

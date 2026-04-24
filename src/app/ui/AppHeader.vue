@@ -2,7 +2,7 @@
 import { RouteNames } from '@/shared/router'
 import { Button } from '@/shared/ui/shadcn/ui/button'
 import { useUserStore } from '@/stores/user'
-import { User } from 'lucide-vue-next'
+import { ShoppingCart, User } from 'lucide-vue-next'
 import { RouterLink } from 'vue-router'
 
 const userStore = useUserStore()
@@ -16,6 +16,11 @@ const userStore = useUserStore()
       </RouterLink>
 
       <div v-if="userStore.user">
+        <RouterLink :to="{ name: RouteNames.Cart }">
+          <Button variant="ghost">
+            <ShoppingCart />
+          </Button>
+        </RouterLink>
         <RouterLink :to="{ name: RouteNames.Profile }"
           ><Button variant="ghost">{{ userStore.user.nickname }} <User /></Button
         ></RouterLink>

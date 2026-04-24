@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { formatProductName, type Product } from '@/entities/products'
-import { Card, CardContent } from '@/shared/ui/shadcn/ui/card'
-import { Button } from '@/shared/ui/shadcn/ui/button'
+import { ProductCatalogCard, type Product } from '@/entities/products'
+
 // import { Badge } from '@/shared/ui/shadcn/ui/badge'
-import { Heart, Search, ShoppingCart } from 'lucide-vue-next'
+import { Search } from 'lucide-vue-next'
 import { Input } from '@/shared/ui/shadcn/ui/input'
 import {
   Pagination,
@@ -13,8 +12,6 @@ import {
   PaginationItem,
   PaginationLast,
 } from '@/shared/ui/shadcn/ui/pagination'
-import { RouteNames } from '@/shared/router'
-import { CURRENCY } from '@/shared/config'
 
 interface ProductListProps {
   products: Product[]
@@ -27,11 +24,8 @@ const props = defineProps<ProductListProps>()
 const emit = defineEmits<{
   'update:page': [number]
   toggleLike: [number, boolean]
+  addToCart: [number]
 }>()
-
-const onLikeClick = (product_id: number, isLiked: boolean) => {
-  emit('toggleLike', product_id, isLiked)
-}
 </script>
 
 <template>
@@ -50,53 +44,13 @@ const onLikeClick = (product_id: number, isLiked: boolean) => {
     <div class="grid gap-8 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-4">
       <!-- grid gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 -->
       <!-- grid gap-4 sm:gap-6 xs:grid-cols-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 -->
-      <Card
+      <ProductCatalogCard
         v-for="product of products"
         :key="product.id"
-        class="p-3 sm:p-4 hover:shadow-lg transition"
-      >
-        <CardContent class="p-3 sm:p-4">
-          <div class="relative mb-3 sm:mb-4 aspect-[2/3] overflow-hidden rounded-md">
-            <img
-              :src="`data:image/png;base64,${product.image}`"
-              :alt="product.name"
-              class="h-full w-full rounded-md object-cover"
-            />
-          </div>
-
-          <div class="space-y-2">
-            <RouterLink :to="{ name: RouteNames.ProductDetail, params: { id: product.id } }">
-              <h3 class="line-clamp-2 text-sm leading-tight font-medium">
-                {{ formatProductName(product.name) }}
-              </h3>
-            </RouterLink>
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="text-base font-bold text-blue-600 sm:text-lg">
-                {{ CURRENCY }}{{ product.price.toFixed(2) }}
-              </span>
-            </div>
-            <p class="text-muted-foreground text-xs">Brand: {{ product.brand }}</p>
-            <div class="flex gap-2 pt-2">
-              <Button variant="outline" class="flex-1" size="sm">
-                <ShoppingCart class="mr-1 h-4 w-4 sm:mr-2" />
-                <span class="xs:inline hidden">Add to cart</span>
-                <span class="xs:hidden">Add</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                class="bg-transparent px-2 sm:px-3"
-                @click="onLikeClick(product.id, product.favorite)"
-              >
-                <Heart
-                  class="h-4 w-4 stroke-black transition-all duration-300 ease-in-out"
-                  :class="product.favorite ? 'fill-black' : 'fill-transparent'"
-                />
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        :product="product"
+        @toggle-like="({ productId, favorite }) => emit('toggleLike', productId, favorite)"
+        @add-to-cart="emit('addToCart', $event)"
+      />
     </div>
 
     <div class="mt-6 self-end w-fit">
