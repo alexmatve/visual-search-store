@@ -9,13 +9,15 @@ import { MAX_PRICE, MIN_PRICE, STEP_PRICE } from '../model/constants'
 import { CURRENCY } from '@/shared/config'
 import { computed, ref, watch } from 'vue'
 import { useAsyncState } from '@vueuse/core'
-import type { ProductsListQuery } from '@/entities/products'
+import type { ProductsListQuery, ProductsListResponse } from '@/entities/products'
 import { Input } from '@/shared/ui/shadcn/ui/input'
+import { ImageLoader } from '@/widgets/image-loader'
 
 const props = defineProps<{ query: ProductsListQuery }>()
 
 const emit = defineEmits<{
   'update:query': [ProductsListQuery]
+  'update:products': [ProductsListResponse]
 }>()
 
 const selectedCategory = ref<string>('All')
@@ -72,6 +74,10 @@ function onMaxPriceInput(val: string | number) {
   applyPriceFilters()
 }
 
+function onProductsUpdate(products: ProductsListResponse) {
+  emit('update:products', products)
+}
+
 watch(
   [selectedCategory, selectedGenderTab],
   ([newCategory, newGender]) => {
@@ -89,7 +95,7 @@ watch(
       <TabsTrigger value="men" class="flex-1 uppercase !hover:bg-muted">Men</TabsTrigger>
       <TabsTrigger value="women" class="flex-1 uppercase !hover:bg-muted">Women</TabsTrigger>
     </TabsList>
-
+    <ImageLoader @update:products="onProductsUpdate" />
     <h3 class="mb-3 font-semibold">Categories</h3>
     <RadioGroup v-model="selectedCategory" name="category">
       <div class="flex flex-col gap-3 text-sm">

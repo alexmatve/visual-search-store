@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAsyncState } from '@vueuse/core'
-import { getProducts, type ProductsListQuery } from '@/entities/products'
+import { getProducts, type ProductsListQuery, type ProductsListResponse } from '@/entities/products'
 import { CatalogFilters, LIMIT } from '@/widgets/catalog-filters'
 import { ProductList } from '@/widgets/product-list'
 import { addLike, removeLike } from '@/features/toggle-like'
@@ -59,6 +59,11 @@ async function setLikeState(productId: number, isLiked: boolean) {
 async function handleCartButton(productId: number) {
   await addToCart(productId, 1)
 }
+
+function updateProducts(products: ProductsListResponse) {
+  if (products.products.length === 0) loader.execute()
+  loader.state.value = products
+}
 </script>
 
 <template>
@@ -66,7 +71,11 @@ async function handleCartButton(productId: number) {
     <div class="flex flex-col gap-30 lg:flex-row">
       <aside class="hidden w-64 lg:block">
         <div class="p-4 gap-3">
-          <CatalogFilters :query="query" @update:query="onUpdateQuery" />
+          <CatalogFilters
+            :query="query"
+            @update:query="onUpdateQuery"
+            @update:products="updateProducts"
+          />
         </div>
       </aside>
 
