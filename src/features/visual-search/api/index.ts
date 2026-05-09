@@ -1,7 +1,7 @@
 import { fileApi } from '@/api/client'
 import type { ProductsListResponse } from '@/entities/products'
 
-export async function predictByImage(file: File): Promise<ProductsListResponse> {
+export async function searchByImage(file: File): Promise<ProductsListResponse> {
   const formData = new FormData()
   formData.append('file', file)
   return fileApi

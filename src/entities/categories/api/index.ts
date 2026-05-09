@@ -1,4 +1,4 @@
-import { publicApi } from '@/api/client'
+import { api } from '@/api/client'
 import type { Category } from '../model/typing'
 
 export interface CategoriesListResponse {
@@ -6,5 +6,5 @@ export interface CategoriesListResponse {
 }
 
 export const getCategories = () => {
-  return publicApi.get('categories').json<CategoriesListResponse>()
+  return api.get('categories').json<CategoriesListResponse>()
 }

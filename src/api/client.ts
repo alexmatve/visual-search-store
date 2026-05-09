@@ -50,5 +50,3 @@ export const fileApi = ky.create({
   },
   timeout: 30_000,
 })
-
-export const publicApi = api

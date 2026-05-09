@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ProductsListResponse } from '@/entities/products'
-import { predictByImage } from '@/features/visual-search'
+import { searchByImage } from '@/features/visual-search'
 import { computed, ref, watch } from 'vue'
 
 const emit = defineEmits<{
@@ -16,8 +16,7 @@ async function onFileSelect(event: Event) {
 
   if (file) {
     selectedFile.value = file
-    const result = await predictByImage(selectedFile.value)
-    console.log('Prediction result:', result)
+    const result = await searchByImage(selectedFile.value)
     emit('update:products', result)
   }
 }
@@ -29,8 +28,7 @@ async function onDrop(event: DragEvent) {
 
   if (file) {
     selectedFile.value = file
-    const result = await predictByImage(selectedFile.value)
-    console.log('Prediction result:', result)
+    const result = await searchByImage(selectedFile.value)
     emit('update:products', result)
   }
 }

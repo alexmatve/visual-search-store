@@ -2,9 +2,34 @@
 import { getCartProducts, removeProductFromCart } from '@/features/handle-cart'
 import { CURRENCY } from '@/shared/config'
 import { Button } from '@/shared/ui/shadcn/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/shared/ui/shadcn/ui/dialog'
+import { useUserStore } from '@/stores/user'
+import { Label } from '@/shared/ui/shadcn/ui/label'
+import { Input } from '@/shared/ui/shadcn/ui/input'
+
 import { ProductCard } from '@/widgets/profile'
 import { useAsyncState } from '@vueuse/core'
-import { computed } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
+import { CheckCircle } from 'lucide-vue-next'
+
+const userStore = useUserStore()
+
+const isOrderDialogOpen = ref(false)
+const isOrderConfirmed = ref(false)
+
+const orderForm = reactive({
+  name: '',
+  address: '',
+  phone: '',
+})
 
 const loader = useAsyncState(async () => getCartProducts(), null, {
   onError(error) {
@@ -35,6 +60,20 @@ const total = computed(() => {
   return (
     loader.state.value?.reduce((prev, val) => (prev += val.product.price * val.quantity), 0)! - 10
   )
+})
+
+const confirmOrder = () => {
+  isOrderConfirmed.value = true
+}
+
+watch(isOrderDialogOpen, (isOpen) => {
+  if (isOpen) {
+    isOrderConfirmed.value = false
+
+    orderForm.name = userStore.user?.name ?? ''
+    orderForm.address = userStore.user?.address ?? ''
+    orderForm.phone = userStore.user?.tel ?? ''
+  }
 })
 </script>
 
@@ -77,7 +116,64 @@ const total = computed(() => {
               </div>
             </div>
 
-            <Button class="mt-6 h-12 w-full"> Make an order </Button>
+            <Dialog v-model:open="isOrderDialogOpen">
+              <DialogTrigger as-child>
+                <Button class="mt-6 h-12 w-full">Make an order</Button>
+              </DialogTrigger>
+
+              <DialogContent>
+                <template v-if="!isOrderConfirmed">
+                  <DialogHeader>
+                    <DialogTitle>Confirm your order</DialogTitle>
+                    <DialogDescription>
+                      Please check your order details before confirmation.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <div class="space-y-6">
+                    <div class="flex items-center justify-between rounded-lg border p-4">
+                      <span class="font-medium">Order total</span>
+                      <span class="text-xl font-bold">{{ CURRENCY }}{{ total }}</span>
+                    </div>
+
+                    <form class="space-y-4" @submit.prevent="confirmOrder">
+                      <div class="space-y-2">
+                        <Label for="name">Name</Label>
+                        <Input id="name" v-model="orderForm.name" required />
+                      </div>
+
+                      <div class="space-y-2">
+                        <Label for="address">Address</Label>
+                        <Input id="address" v-model="orderForm.address" required />
+                      </div>
+
+                      <div class="space-y-2">
+                        <Label for="phone">Phone</Label>
+                        <Input id="phone" v-model="orderForm.phone" required />
+                      </div>
+
+                      <DialogFooter>
+                        <Button type="submit" class="w-full"> Confirm order </Button>
+                      </DialogFooter>
+                    </form>
+                  </div>
+                </template>
+
+                <template v-else>
+                  <div class="flex flex-col items-center text-center space-y-4 py-6">
+                    <CheckCircle class="h-16 w-16 text-black-500 animate-scale-in" />
+                    <DialogHeader>
+                      <DialogTitle>Thank you for your order!</DialogTitle>
+                      <DialogDescription> We will contact you shortly. </DialogDescription>
+                    </DialogHeader>
+
+                    <DialogFooter class="w-full">
+                      <Button class="w-full" @click="isOrderDialogOpen = false"> Close </Button>
+                    </DialogFooter>
+                  </div>
+                </template>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>

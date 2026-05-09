@@ -1,8 +1,6 @@
 import { authApi } from '@/api/auth'
-import { api, publicApi } from '@/api/client'
 import { type EditProfileDTO, type LoginDTO, type RegisterDTO, type User } from '@/entities/user'
 import { authStorage } from '@/shared/lib'
-import { useStorage } from '@vueuse/core'
 import { HTTPError } from 'ky'
 import { defineStore } from 'pinia'
 import { computed, ref, type Ref } from 'vue'

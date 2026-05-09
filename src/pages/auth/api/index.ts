@@ -1,4 +1,4 @@
-import { publicApi } from '@/api/client'
+import { api } from '@/api/client'
 import type { User } from '@/entities/user'
 
 interface LoginData {
@@ -16,5 +16,5 @@ interface LoginData {
 }
 
 export const login = (payload: { email: string; password: string }): Promise<LoginData | null> => {
-  return publicApi.post('/auth/login', { json: payload }).json<LoginData>()
+  return api.post('/auth/login', { json: payload }).json<LoginData>()
 }
